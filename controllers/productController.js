@@ -1,52 +1,61 @@
-const express = require("express");
-const app = express();
-const Product = require("../models/Product");
-const bodyParser = require("body-parser");
 const multer = require("multer");
-const path = require("path");
-const categoryMap = require ('../utils/categoryMap')
+const categoryMap = require("../utils/categoryMap");
+const { supabase } = require("../connection");
 
+// multer → keep in memory (so we can send buffer to Supabase)
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/uploads/"); 
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); 
-  },
-});
-
-const upload = multer({ storage: storage });
-
-
-
-// List Products
+// ✅ List Products
 exports.listProducts = async (req, res) => {
-  const products = await Product.find();
-  res.render("products", { products, categories: [] }); 
+  const { data: products, error } = await supabase.from("products").select("*");
+
+  if (error) {
+    console.error("❌ Error fetching products:", error);
+    return res.status(500).send("Error fetching products");
+  }
+
+  res.render("products", { products, categories: [] });
 };
 
-// Add Product
+// ✅ Add Product
 exports.addProduct = async (req, res) => {
   try {
     const { name, category, details, description } = req.body;
-
     const pageId = categoryMap[category] || "others";
 
-    const product = new Product({
-      name,
-      category,
-      pageId,
-      details,
-      description,
-      image: req.file ? `/uploads/${req.file.filename}` : null,
-    });
+    let imageUrl = null;
 
-    await product.save();
+    if (req.file) {
+      const filePath = `images/${Date.now()}-${req.file.originalname}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("products")
+        .upload(filePath, req.file.buffer, {
+          contentType: req.file.mimetype,
+        });
+
+      if (uploadError) {
+        console.error("❌ Upload error:", uploadError);
+        return res.status(500).send("Image upload failed");
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("products")
+        .getPublicUrl(filePath);
+
+      imageUrl = publicUrlData.publicUrl;
+    }
+
+    const { error: insertError } = await supabase.from("products").insert([
+      { name, category, pageId, details, description, image: imageUrl },
+    ]);
+
+    if (insertError) {
+      console.error("❌ Insert error:", insertError);
+      return res.status(500).send("Error adding product");
+    }
+
     res.redirect("/products");
   } catch (err) {
     console.error(err);
@@ -54,22 +63,44 @@ exports.addProduct = async (req, res) => {
   }
 };
 
-
-
-
-
-// Update Product
+// ✅ Update Product
 exports.updateProduct = async (req, res) => {
   try {
     const { name, category, details, description } = req.body;
-
-    const updateData = { name, category, details, description };
+    let updateData = { name, category, details, description };
 
     if (req.file) {
-      updateData.image = `/uploads/${req.file.filename}`;
+      const filePath = `images/${Date.now()}-${req.file.originalname}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("products")
+        .upload(filePath, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error("❌ Upload error:", uploadError);
+        return res.status(500).send("Image upload failed");
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("products")
+        .getPublicUrl(filePath);
+
+      updateData.image = publicUrlData.publicUrl;
     }
 
-    await Product.findByIdAndUpdate(req.params.id, updateData);
+    const { error: updateError } = await supabase
+      .from("products")
+      .update(updateData)
+      .eq("id", req.params.id);
+
+    if (updateError) {
+      console.error("❌ Update error:", updateError);
+      return res.status(500).send("Error updating product");
+    }
+
     res.redirect("/products");
   } catch (err) {
     console.error(err);
@@ -77,10 +108,19 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-// Delete Product
+// ✅ Delete Product
 exports.deleteProduct = async (req, res) => {
   try {
-    await Product.findByIdAndDelete(req.params.id);
+    const { error: deleteError } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", req.params.id);
+
+    if (deleteError) {
+      console.error("❌ Delete error:", deleteError);
+      return res.status(500).send("Error deleting product");
+    }
+
     res.redirect("/products");
   } catch (err) {
     console.error(err);
@@ -88,5 +128,5 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-
+// ✅ Export multer middleware
 exports.upload = upload.single("image");
