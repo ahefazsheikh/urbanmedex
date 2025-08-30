@@ -1,28 +1,41 @@
 const multer = require("multer");
-const categoryMap = require("../utils/categoryMap");
 const { supabase } = require("../connection");
 
-// multer → keep in memory (so we can send buffer to Supabase)
+// ✅ Multer → keep in memory (so we can send buffer to Supabase)
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+/**
+ * Utility function to normalize category → pageId
+ * Converts: "Antiviral And Antibiotics" → "antiviralandantibiotics"
+ */
+function normalizePageId(category) {
+  return category
+    .toLowerCase()
+    .replace(/\s+/g, ""); // remove spaces
+}
+
 // ✅ List Products
 exports.listProducts = async (req, res) => {
-  const { data: products, error } = await supabase.from("products").select("*");
+  try {
+    const { data: products, error } = await supabase
+      .from("products")
+      .select("*");
 
-  if (error) {
-    console.error("❌ Error fetching products:", error);
-    return res.status(500).send("Error fetching products");
+    if (error) throw error;
+
+    res.render("products", { products, categories: [] });
+  } catch (err) {
+    console.error("❌ Error fetching products:", err);
+    res.status(500).send("Error fetching products");
   }
-
-  res.render("products", { products, categories: [] });
 };
 
 // ✅ Add Product
 exports.addProduct = async (req, res) => {
   try {
     const { name, category, details, description } = req.body;
-    const pageId = categoryMap[category] || "others";
+    const pageId = normalizePageId(category); // ✅ Auto-generate pageId
 
     let imageUrl = null;
 
@@ -51,14 +64,11 @@ exports.addProduct = async (req, res) => {
       { name, category, pageId, details, description, image: imageUrl },
     ]);
 
-    if (insertError) {
-      console.error("❌ Insert error:", insertError);
-      return res.status(500).send("Error adding product");
-    }
+    if (insertError) throw insertError;
 
     res.redirect("/products");
   } catch (err) {
-    console.error(err);
+    console.error("❌ Insert error:", err);
     res.status(500).send("Error adding product");
   }
 };
@@ -67,7 +77,13 @@ exports.addProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { name, category, details, description } = req.body;
-    let updateData = { name, category, details, description };
+    let updateData = {
+      name,
+      category,
+      pageId: normalizePageId(category), // ✅ Keep pageId in sync
+      details,
+      description,
+    };
 
     if (req.file) {
       const filePath = `images/${Date.now()}-${req.file.originalname}`;
@@ -96,14 +112,11 @@ exports.updateProduct = async (req, res) => {
       .update(updateData)
       .eq("id", req.params.id);
 
-    if (updateError) {
-      console.error("❌ Update error:", updateError);
-      return res.status(500).send("Error updating product");
-    }
+    if (updateError) throw updateError;
 
     res.redirect("/products");
   } catch (err) {
-    console.error(err);
+    console.error("❌ Update error:", err);
     res.status(500).send("Error updating product");
   }
 };
@@ -116,14 +129,11 @@ exports.deleteProduct = async (req, res) => {
       .delete()
       .eq("id", req.params.id);
 
-    if (deleteError) {
-      console.error("❌ Delete error:", deleteError);
-      return res.status(500).send("Error deleting product");
-    }
+    if (deleteError) throw deleteError;
 
     res.redirect("/products");
   } catch (err) {
-    console.error(err);
+    console.error("❌ Delete error:", err);
     res.status(500).send("Error deleting product");
   }
 };
