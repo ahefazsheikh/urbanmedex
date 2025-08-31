@@ -20,7 +20,8 @@ exports.listProducts = async (req, res) => {
   try {
     const { data: products, error } = await supabase
       .from("products")
-      .select("*");
+      .select("*")
+      .order("created_at", { ascending: false }); // show newest first
 
     if (error) throw error;
 
@@ -35,7 +36,7 @@ exports.listProducts = async (req, res) => {
 exports.addProduct = async (req, res) => {
   try {
     const { name, category, details, description } = req.body;
-    const pageId = normalizePageId(category); // ✅ Auto-generate pageId
+    const pageId = normalizePageId(category);
 
     let imageUrl = null;
 
@@ -66,7 +67,8 @@ exports.addProduct = async (req, res) => {
 
     if (insertError) throw insertError;
 
-    res.redirect("/products");
+    // ✅ Redirect back to admin dashboard
+    res.redirect("/admin_urbanmedex");
   } catch (err) {
     console.error("❌ Insert error:", err);
     res.status(500).send("Error adding product");
@@ -80,7 +82,7 @@ exports.updateProduct = async (req, res) => {
     let updateData = {
       name,
       category,
-      pageId: normalizePageId(category), // ✅ Keep pageId in sync
+      pageId: normalizePageId(category),
       details,
       description,
     };
@@ -114,7 +116,8 @@ exports.updateProduct = async (req, res) => {
 
     if (updateError) throw updateError;
 
-    res.redirect("/products");
+    // ✅ Redirect back to admin dashboard
+    res.redirect("/admin_urbanmedex");
   } catch (err) {
     console.error("❌ Update error:", err);
     res.status(500).send("Error updating product");
@@ -131,7 +134,8 @@ exports.deleteProduct = async (req, res) => {
 
     if (deleteError) throw deleteError;
 
-    res.redirect("/products");
+    // ✅ Redirect back to admin dashboard
+    res.redirect("/admin_urbanmedex");
   } catch (err) {
     console.error("❌ Delete error:", err);
     res.status(500).send("Error deleting product");

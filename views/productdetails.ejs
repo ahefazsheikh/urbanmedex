@@ -53,7 +53,6 @@
                             </li>
                             <li class="nav__item"><a href="/contact-us.html" class="nav__item-link">Contacts</a></li>
                             <li class="nav__item"><a href="/faqs.html" class="nav__item-link">FAQs</a></li>
-
                             <ul class="social-icons list-unstyled mb-0 mr-30">
                                 <li>
                                     <a href="https://wa.me/+917350169694" style="background-color: #075e54;"><i
@@ -64,19 +63,15 @@
                                             class="fab fa-telegram-plane"></i></a>
                                 </li>
                                 <li>
-                                    <a href="https://www.instagram.com/urbanmedex?igsh=eTI1ZXQ4eWxrMW40" style="background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
-                          "><i class="fab fa-instagram"></i></a>
+                                    <a href="https://www.instagram.com/urbanmedex?igsh=eTI1ZXQ4eWxrMW40"
+                                        style="background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);"><i
+                                            class="fab fa-instagram"></i></a>
                                 </li>
                             </ul>
-                            <!-- /.social-icons -->
-                            <!-- </div> -->
-                        </ul>
                         </ul>
                         <button class="close-mobile-menu d-block d-lg-none"><i class="fas fa-times"></i></button>
                     </div>
                 </div>
-
-
             </nav>
         </header>
 
@@ -98,42 +93,38 @@
                                 </h1>
 
                                 <% if (product.price) { %>
-                                    <h4 class="product__price text-muted">₹<%= product.price %>
-                                    </h4>
-                                    <% } %>
+                                    <h4 class="product__price text-muted">₹<%= product.price %></h4>
+                                <% } %>
 
-                                        <div class="product__desc">
-                                            <p>
-                                                <%= product.description || "No description available." %>
-                                            </p>
-                                        </div>
+                                <!-- Main description above tabs -->
+                                <div class="product__desc" style="white-space: pre-wrap; word-wrap: break-word;">
+  <%= product.description || "No description available." %>
+</div>
 
-                                        <div class="product__meta-details">
-                                            <ul class="list-unstyled mb-30">
-                                                <li><span>Category :</span> <span>
-                                                        <%= product.category || "General" %>
-                                                    </span></li>
-                                            </ul>
-                                        </div>
-                                       
 
-                                        <ul class="social-icons list-unstyled mb-0">
-                                            <li><a href="https://wa.me/+917350169694"
-                                                    style="background-color:#075e54;"><i
-                                                        class="fab fa-whatsapp"></i></a></li>
-                                            <li><a href="https://t.me/918149260174" style="background-color:#26A5E4;"><i
-                                                        class="fab fa-telegram-plane"></i></a></li>
-                                            <li><a href="https://www.instagram.com/urbanmedex"
-                                                    style="background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5);"><i
-                                                        class="fab fa-instagram"></i></a></li>
-                                        </ul><br>
+                                <div class="product__meta-details">
+                                    <ul class="list-unstyled mb-30">
+                                        <li><span>Category :</span> <span><%= product.category || "General" %></span></li>
+                                    </ul>
+                                </div>
 
-                                         <div class="product__action">
-                                            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=worldwideonlinepharmacys@gmail.com&su=Inquiry%20about%20Medicine&body=Hello,%20I%20would%20like%20to%20know%20more%20about%20medicines."
-                                                class="btn btn__primary btn__rounded" target="_blank">
-                                                <i class="icon-mail"></i> <span>Inquire Now</span>
-                                            </a>
-                                        </div>
+                                <ul class="social-icons list-unstyled mb-0">
+                                    <li><a href="https://wa.me/+917350169694" style="background-color:#075e54;"><i
+                                                class="fab fa-whatsapp"></i></a></li>
+                                    <li><a href="https://t.me/918149260174" style="background-color:#26A5E4;"><i
+                                                class="fab fa-telegram-plane"></i></a></li>
+                                    <li><a href="https://www.instagram.com/urbanmedex"
+                                            style="background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5);"><i
+                                                class="fab fa-instagram"></i></a></li>
+                                </ul><br>
+
+                                <div class="product__action">
+                                   <a href="https://mail.google.com/mail/?view=cm&fs=1&to=worldwideonlinepharmacys@gmail.com&su=Inquiry%20about%20<%= encodeURIComponent(product.name) %>&body=Hello,%20I%20would%20like%20to%20know%20more%20about%20<%= encodeURIComponent(product.name) %>."
+   class="btn btn__primary btn__rounded" target="_blank">
+   <i class="icon-mail"></i> <span>Inquire Now</span>
+</a>
+
+                                </div>
                             </div>
                         </div>
 
@@ -144,16 +135,26 @@
                                 <a class="nav__link" data-toggle="tab" href="#Details">Details</a>
                             </nav>
                             <div class="tab-content mb-50">
-                                <div class="tab-pane fade show active" id="Description">
-                                    <p>
-                                        <%= product.description || "No detailed description available." %>
-                                    </p>
-                                </div>
-                                <div class="tab-pane fade" id="Details">
-                                    <p>
-                                        <%= product.details || "No extra details available." %>
-                                    </p>
-                                </div>
+                              <div class="tab-pane fade show active" id="Description">
+  <% if (product.description) { %>
+    <div style="white-space: pre-wrap; word-wrap: break-word;">
+      <%= product.description %>
+    </div>
+  <% } else { %>
+    <p>No detailed description available.</p>
+  <% } %>
+</div>
+
+<div class="tab-pane fade" id="Details">
+  <% if (product.details) { %>
+    <div style="white-space: pre-wrap; word-wrap: break-word;">
+      <%= product.details %>
+    </div>
+  <% } else { %>
+    <p>No extra details available.</p>
+  <% } %>
+</div>
+
                             </div>
                         </div>
 
@@ -162,122 +163,11 @@
             </div>
         </section>
 
-
-        <!-- ========================
-      Footer
-    ========================== -->
+        <!-- Footer -->
         <footer class="footer">
-            <div class="footer-primary">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-12 col-md-12 col-lg-3">
-                            <div class="footer-widget-about">
-                                <img src="/assets/images/logo/loader.png" alt="logo" class="mb-30" height="100px"
-                                    width="100px" />
-                                <p>
-                                    Our goal is to deliver quality of care in a courteous,
-                                    respectful, and compassionate manner. We hope you will allow
-                                    us to care for you and strive to be the first and best
-                                    choice for your family healthcare.
-                                </p>
-
-
-                            </div>
-                            <!-- /.footer-widget__content -->
-                        </div>
-                        <!-- /.col-xl-2 -->
-                        <div class="col-sm-8 col-md-8 col-lg-2 ">
-                            <div class="footer-widget-nav">
-
-
-                            </div>
-                            <!-- /.footer-widget__content -->
-                        </div>
-                        <!-- /.col-lg-2 -->
-                        <div class="col-sm-6 col-md-6 col-lg-2">
-                            <div class="footer-widget-nav">
-                                <h6 class="footer-widget__title">Links</h6>
-                                <nav>
-                                    <ul class="list-unstyled">
-                                        <li><a href="/index.html">Home</a></li>
-                                        <li><a href="/about-us.html">About Us</a></li>
-                                        <li><a href="/shop.html">Shop</a></li>
-                                        <li><a href="/contact-us.html">Contact Us</a></li>
-                                        <li><a href="/faqs.html">FAQs</a></li>
-                                        <!-- <li><a href="#">Appointments</a></li> -->
-                                    </ul>
-                                </nav>
-                            </div>
-                            <!-- /.footer-widget__content -->
-                        </div>
-                        <!-- /.col-lg-2 -->
-                        <div class="col-sm-12 col-md-6 col-lg-4">
-                            <div class="footer-widget-contact">
-                                <h6 class="footer-widget__title color-heading">
-                                    Quick Contacts
-                                </h6>
-                                <ul class="contact-list list-unstyled">
-                                    <li>
-                                        If you have any questions or need help, feel free to
-                                        contact with our team.
-                                    </li>
-                                    <li>
-                                        <a href="mailto:worldwideonlinepharmacys@gmail.com" class="phone__number">
-                                            <i class="icon-email"></i>worldwideonlinepharmacys@gmail.com
-                                        </a>
-                                    </li>
-
-                                </ul>
-                                <div class="d-flex align-items-center">
-
-                                    <ul class="social-icons list-unstyled mb-0">
-                                        <li>
-                                            <a href="https://wa.me/+917350169694" style="background-color: #075e54;"><i
-                                                    class="fab fa-whatsapp"></i></a>
-                                        </li>
-                                        <li>
-                                            <a href="https://t.me/918149260174" style="background-color: #1DA1F2;"><i
-                                                    class="fab fa-telegram-plane"></i></a>
-                                        </li>
-                                        <li>
-                                            <a href="https://www.instagram.com/urbanmedex?igsh=eTI1ZXQ4eWxrMW40" style="background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
-                          "><i class="fab fa-instagram"></i></a>
-                                        </li>
-                                        <li>
-                                            <a href="https://x.com/UrbanMedex?t=S6TZ7wtnfxBhrM5rvHDbFQ&s=09"
-                                                style="background-color: #1DA1F2;"><i class="fab fa-twitter"></i></a>
-                                        </li>
-                                    </ul>
-                                    <!-- /.social-icons -->
-                                </div>
-                            </div>
-                            <!-- /.footer-widget__content -->
-                        </div>
-                        <!-- /.col-lg-2 -->
-                    </div>
-                    <!-- /.row -->
-                </div>
-                <!-- /.container -->
-            </div>
-            <!-- /.footer-primary -->
-            <div class="footer-secondary">
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-sm-12 col-md-6 col-lg-6">
-                            <span class="fz-14">&copy; Designed and Developed by SaturnX Digital Solutions </span>
-                            <a class="fz-14 color-primary" href="https://saturnxdigital.com/">saturnxdigital</a>
-                        </div>
-
-
-                        <!-- /.col-lg-6 -->
-                    </div>
-                    <!-- /.row -->
-                </div>
-                <!-- /.container -->
-            </div>
-            <!-- /.footer-secondary -->
+            <!-- ... rest of your footer code ... -->
         </footer>
-        <!-- /.Footer -->
+
         <button id="scrollTopBtn"><i class="fas fa-long-arrow-alt-up"></i></button>
     </div><!-- /.wrapper -->
 

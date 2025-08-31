@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const { supabase } = require("../connection");
+// routes/productroute.js
+// const express = require("express");
+// const router = express.Router();
+// const { supabase } = require("../connection");
 
 // ✅ API: Get all products (for frontend)
 router.get("/api/products", async (req, res) => {
@@ -73,6 +77,27 @@ router.get("/:id", async (req, res) => {
   } catch (err) {
     console.error("❌ Route error:", err);
     res.status(500).send("Server Error");
+  }
+});
+
+
+// Live search for frontend
+router.get("/api/frontend-search", async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) return res.json([]);
+
+    const { data, error } = await supabase
+      .from("products")
+      .select("id, name")
+      .ilike("name", `%${q.trim()}%`)
+      .limit(5);
+
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    console.error("❌ Frontend live search error:", err.message);
+    res.status(500).json({ error: "Error fetching suggestions" });
   }
 });
 

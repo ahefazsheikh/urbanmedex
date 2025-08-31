@@ -3,7 +3,7 @@ const router = express.Router();
 
 // Static credentials
 const adminUser = "admin";
-const adminPass = "12345";
+const adminPass = "urban@medex";
 
 // LOGIN PAGE
 router.get("/login", (req, res) => {
@@ -28,7 +28,7 @@ router.post("/login", (req, res) => {
 // LOGOUT
 router.get("/logout", (req, res) => {
   req.session.destroy(() => {
-    res.redirect("/");
+    res.redirect("/login");
   });
 });
 

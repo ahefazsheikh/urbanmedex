@@ -1,7 +1,48 @@
 <%- include('partials/header') %>
   <%- include('partials/sidebar') %>
 
-    <h2 class="text-2xl font-bold mb-6">Product Management</h2>
+<div class="grid grid-cols-1 sm:grid-cols-3 items-center mb-6 px-4">
+  <!-- spacer (balances the right column on >= sm) -->
+  <div class="hidden sm:block"></div>
+
+  <!-- perfectly centered logo + title -->
+  <h2 class="text-2xl font-bold flex items-center justify-center gap-3 py-2 text-center">
+    <img src="assets/images/logo/loader.png"
+         alt="Urban Medex Logo"
+         class="w-12 h-12 sm:w-14 sm:h-14 rounded-full">
+    <span class="leading-tight">Welcome to Admin Dashboard of Urban Medex</span>
+  </h2>
+
+  <!-- logout on the right (centered below on mobile) -->
+  <div class="justify-self-center sm:justify-self-end mt-2 sm:mt-0">
+    <a href="/logout"
+       class="inline-block bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+      Logout
+    </a>
+  </div>
+</div>
+<div class="flex justify-center mb-6 px-6 relative">
+  <form action="/search" method="get" class="w-full max-w-lg flex gap-2 relative">
+    <input type="text"
+           id="searchInput"
+           name="q"
+           placeholder="Search products by name..."
+           class="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+           autocomplete="off">
+    <button type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      Search
+    </button>
+    <!-- Suggestions dropdown -->
+    <ul id="suggestions"
+        class="absolute left-0 top-full bg-white border rounded mt-1 w-full shadow hidden z-50"></ul>
+  </form>
+</div>
+
+
+
+
+
 
     <!-- Add Product Form -->
     <form method="POST" action="/products/add" enctype="multipart/form-data"
@@ -68,9 +109,14 @@
       <td class="p-3">
         <%= product.details %>
       </td>
-      <td class="p-3">
-        <%= product.description %>
-      </td>
+    <td class="p-3 max-w-xs break-words">
+  <% if (product.description) { %>
+    <p style="white-space: pre-wrap; margin: 0;"><%= product.description %></p>
+  <% } else { %>
+    No Description
+  <% } %>
+</td>
+
       <td class="p-3">
         <% if (product.image) { %>
           <img src="<%= product.image %>" alt="Product Image" class="w-16 h-16 object-cover rounded">
@@ -98,5 +144,57 @@
 
       </table>
     </div>
+<script>
+  const searchInput = document.getElementById("searchInput");
+  const suggestionsBox = document.getElementById("suggestions");
+
+  searchInput.addEventListener("input", async () => {
+    const q = searchInput.value.trim();
+
+    if (!q) {
+      suggestionsBox.innerHTML = "";
+      suggestionsBox.classList.add("hidden");
+
+      // ✅ Reload all products when cleared
+      window.location.href = "/admin_urbanmedex";
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      const products = await res.json();
+
+      if (products.length === 0) {
+        suggestionsBox.innerHTML = "<li class='p-2 text-gray-500'>No matches</li>";
+      } else {
+        suggestionsBox.innerHTML = products
+          .map(p => `<li class="p-2 hover:bg-gray-100 cursor-pointer"
+                          onclick="selectSuggestion('${p.name}')">${p.name}</li>`)
+          .join("");
+      }
+
+      suggestionsBox.classList.remove("hidden");
+    } catch (err) {
+      console.error("❌ Error fetching suggestions:", err);
+    }
+  });
+
+  function selectSuggestion(name) {
+    searchInput.value = name;
+    suggestionsBox.innerHTML = "";
+    suggestionsBox.classList.add("hidden");
+
+    // ✅ auto-submit the form when a suggestion is clicked
+    searchInput.form.submit();
+  }
+
+  // Hide suggestions when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+      suggestionsBox.innerHTML = "";
+      suggestionsBox.classList.add("hidden");
+    }
+  });
+</script>
 
     <%- include('partials/footer') %>
