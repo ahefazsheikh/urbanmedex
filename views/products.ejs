@@ -106,9 +106,14 @@
       <td class="p-3">
         <%= product.category %>
       </td>
-      <td class="p-3">
-        <%= product.details %>
-      </td>
+      <td class="p-3 max-w-xs break-words">
+  <% if (product.details) { %>
+    <p style="white-space: pre-wrap; margin: 0;"><%= product.details %></p>
+  <% } else { %>
+    No Details
+  <% } %>
+</td>
+
     <td class="p-3 max-w-xs break-words">
   <% if (product.description) { %>
     <p style="white-space: pre-wrap; margin: 0;"><%= product.description %></p>
