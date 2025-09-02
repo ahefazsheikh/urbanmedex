@@ -14,5 +14,5 @@
 //   "Tadalafil Tabltes": "tadalafil",
 //   "Vardenafil Tablets": "vardenafil",
 //   "Weight-loss": "Weight-loss",
-//   "OthersMedicine-2": "Others"
+//   "OthersMedicine-2-2": "Others"
 // };
