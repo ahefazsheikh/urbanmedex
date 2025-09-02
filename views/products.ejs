@@ -68,7 +68,8 @@
           <option value="Tadalafil Tabltes">Tadalafil Tabltes</option>
           <option value="Vardenafil Tablets">Vardenafil Tablets</option>
           <option value="Weight-loss">Weight-loss</option>
-          <option value="OthersMedicine-2">OthersMedicine-2</option>
+          <option value="Best Seller">Best Seller</option>
+          <option value="OthersMedicine">OthersMedicine</option>
         </select>
 
         <!-- Details -->
@@ -166,15 +167,21 @@
     }
 
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      // ✅ FIX: Use correct backend route
+      const res = await fetch(`/product/api/frontend-search?q=${encodeURIComponent(q)}`);
       const products = await res.json();
 
-      if (products.length === 0) {
+      if (!products.length) {
         suggestionsBox.innerHTML = "<li class='p-2 text-gray-500'>No matches</li>";
       } else {
         suggestionsBox.innerHTML = products
-          .map(p => `<li class="p-2 hover:bg-gray-100 cursor-pointer"
-                          onclick="selectSuggestion('${p.name}')">${p.name}</li>`)
+          .map(
+            (p) => `
+              <li class="p-2 hover:bg-gray-100 cursor-pointer"
+                  onclick="selectSuggestion('${p.name}')">
+                ${p.name}
+              </li>`
+          )
           .join("");
       }
 
@@ -189,7 +196,7 @@
     suggestionsBox.innerHTML = "";
     suggestionsBox.classList.add("hidden");
 
-    // ✅ auto-submit the form when a suggestion is clicked
+    // ✅ Auto-submit the form when a suggestion is clicked
     searchInput.form.submit();
   }
 
@@ -201,5 +208,6 @@
     }
   });
 </script>
+
 
     <%- include('partials/footer') %>

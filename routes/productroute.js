@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const { supabase } = require("../connection");
-// routes/productroute.js
-// const express = require("express");
-// const router = express.Router();
-// const { supabase } = require("../connection");
 
 // ✅ API: Get all products (for frontend)
 router.get("/api/products", async (req, res) => {
@@ -80,8 +76,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-
-// Live search for frontend
+// ✅ Live search for frontend (now includes category, pageId & image)
 router.get("/api/frontend-search", async (req, res) => {
   try {
     const { q } = req.query;
@@ -89,11 +84,16 @@ router.get("/api/frontend-search", async (req, res) => {
 
     const { data, error } = await supabase
       .from("products")
-      .select("id, name")
+      .select("id, name, category, pageId, image")
       .ilike("name", `%${q.trim()}%`)
+      .order("created_at", { ascending: false })
       .limit(5);
 
-    if (error) throw error;
+    if (error) {
+      console.error("❌ Supabase search error:", error);
+      return res.status(500).json({ error: error.message });
+    }
+
     res.json(data);
   } catch (err) {
     console.error("❌ Frontend live search error:", err.message);

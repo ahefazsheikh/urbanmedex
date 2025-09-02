@@ -282,7 +282,6 @@
   const searchInput = document.getElementById("productSearch");
   const suggestionsBox = document.getElementById("suggestionsBox");
 
-  // Live search
   searchInput.addEventListener("input", async () => {
     const q = searchInput.value.trim();
 
@@ -293,6 +292,7 @@
     }
 
     try {
+      // ✅ Using the correct backend route
       const res = await fetch(`/product/api/frontend-search?q=${encodeURIComponent(q)}`);
       const products = await res.json();
 
@@ -316,12 +316,10 @@
     }
   });
 
-  // When clicking a suggestion
   function goToProduct(id) {
     window.location.href = `/product/${id}`;
   }
 
-  // On pressing Enter in the search bar
   function redirectSearch() {
     const q = searchInput.value.trim();
     if (!q) return false;
@@ -330,14 +328,13 @@
       .then((res) => res.json())
       .then((products) => {
         if (products.length > 0) {
-          // Redirect to first match
           window.location.href = `/product/${products[0].id}`;
         }
       });
+
     return false;
   }
 
-  // Hide suggestions when clicking outside
   document.addEventListener("click", (e) => {
     if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
       suggestionsBox.innerHTML = "";
@@ -345,6 +342,8 @@
     }
   });
 </script>
+
+
 
 
                 <p class="slide__desc" style="color: #0e204d">
@@ -1828,7 +1827,7 @@
       <!-- ==========================
         contact layout 3
       =========================== -->
-      <section
+     <section
         class="contact-layout3 bg-overlay bg-overlay-primary-gradient pb-60"
       >
         <!-- <div class="bg-img">
@@ -1841,7 +1840,7 @@
                <form
                 class="contact-panel__form"
                 method="post"
-                action="https://script.google.com/macros/s/AKfycbyTVs0th-wfMhvD-giEdRpGwpc0xzdkZaP2FyziwL_nrWlpldJ2O_lU8njyQH5gWX3R/exec"
+                action="https://script.google.com/macros/s/AKfycbz2pRGy-Py2XJPPHLNPSDMwBQtsBebV8rH8ZEux1s83X_X9yfKx2x7TIFuji8UluB-Q-Q/exec"
                 id="contactForm"
               >
                 <div class="row">
@@ -1885,6 +1884,7 @@
                         class="form-control"
                         placeholder="Phone"
                         name="contact-Phone"
+                        required
                       />
                     </div>
                   </div>
@@ -1902,7 +1902,12 @@
                       />
                     </div>
                   </div>
-
+                  <div class="col-12">
+                    <div class="form-group">
+                      <i class="icon-alert form-group-icon"></i>
+                     <textarea class="form-control" placeholder="Message" id="contact-message" name="contact-message" required></textarea>
+                    </div>
+                </div>
                   <div class="col-12">
                     <button
                       type="submit"
