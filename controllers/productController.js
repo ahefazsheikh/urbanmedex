@@ -75,6 +75,8 @@ exports.addProduct = async (req, res) => {
   }
 };
 
+
+
 // ✅ Update Product
 exports.updateProduct = async (req, res) => {
   try {
