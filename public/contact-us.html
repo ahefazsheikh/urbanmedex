@@ -319,7 +319,7 @@
         <div class="row">
           <div class="col-12">
             <div class="contact-panel d-flex flex-wrap">
-              <form
+               <form
                 class="contact-panel__form"
                 method="post"
                 action="https://script.google.com/macros/s/AKfycbx1GMiin30tPoQRTQkZ0fodt9wLIQrnSO5o_ETxWvO1zam3PoWK6w2WMLFpU5WDn13J/exec"
@@ -333,14 +333,16 @@
                   <div class="col-sm-6 col-md-6 col-lg-6">
                     <div class="form-group">
                       <i class="fas fa-user form-group-icon"></i>
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Name"
-                        id="contact-name"
-                        name="contact-name"
-                        required
-                      />
+                     <input
+  type="text"
+  class="form-control"
+  placeholder="Name"
+  id="contact-name"
+  name="contact-name"
+  pattern="^[A-Za-z\s]+$"
+  title="Name should contain only letters"
+  required
+/>
                     </div>
                   </div>
 
@@ -361,27 +363,31 @@
                   <div class="col-sm-6 col-md-6 col-lg-6">
                     <div class="form-group">
                       <input
-                        id="contact-Phone"
-                        type="tel"
-                        class="form-control"
-                        placeholder="Phone"
-                        name="contact-Phone"
-                        required
-                      />
+  id="contact-phone"
+  type="tel"
+  class="form-control"
+  placeholder="Phone"
+  name="contact-phone"
+   pattern="^\+?[0-9]{7,15}$"
+  title="Enter a valid phone number "
+  required
+/>
                     </div>
                   </div>
 
                   <div class="col-sm-6 col-md-6 col-lg-6">
                     <div class="form-group">
                       <i class="icon-location form-group-icon"></i>
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Country"
-                        id="location"
-                        name="location"
-                        required
-                      />
+                     <input
+  type="text"
+  class="form-control"
+  placeholder="Country"
+  id="location"
+  name="location"
+  pattern="^[A-Za-z\s]+$"
+  title="Country should contain only letters"
+  required
+/>
                     </div>
                   </div>
                   <div class="col-12">
@@ -751,6 +757,11 @@ document.getElementById("contactForm").addEventListener("submit", function(e) {
   e.preventDefault(); // stop normal form submission
 
   const form = e.target;
+    // ✅ Prevent submission if invalid
+  if (!form.checkValidity()) {
+    form.reportValidity(); // show browser error messages
+    return; // stop here if invalid
+  }
   const formData = new FormData(form);
 
   fetch(form.action, {
