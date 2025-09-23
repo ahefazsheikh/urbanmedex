@@ -243,9 +243,9 @@ $(function () {
     $('.slider-with-navs').slick({
         slidesToShow: 1,
         slidesToScroll: 1,
-        arrows: false,
+        arrows: true,
         fade: false,
-        dots: true,
+        dots: false,
         asNavFor: '.slider-nav'
     });
 
