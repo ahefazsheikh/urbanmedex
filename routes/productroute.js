@@ -82,20 +82,24 @@ router.get("/api/frontend-search", async (req, res) => {
     const { q } = req.query;
     if (!q) return res.json([]);
 
+    const searchTerm = `%${q.trim()}%`;
+
+    // Search in both name and details fields using or filter
     const { data, error } = await supabase
       .from("products")
-      .select("id, name, category, pageId, image")
-      .ilike("name", `%${q.trim()}%`)
+      .select("id, name, category, pageId, image, details, content") // Include content for better searchability
+      .or(`name.ilike.${searchTerm},details.ilike.${searchTerm}, content.ilike.${searchTerm}`)
       .order("created_at", { ascending: false })
-      .limit(5);
+      .limit(10);
 
     if (error) {
       console.error("❌ Supabase search error:", error);
       return res.status(500).json({ error: error.message });
     }
 
+    console.log("✅ Search results:", data); // Debug log
     res.json(data);
-  } catch (err) {
+  }catch (err) {
     console.error("❌ Frontend live search error:", err.message);
     res.status(500).json({ error: "Error fetching suggestions" });
   }

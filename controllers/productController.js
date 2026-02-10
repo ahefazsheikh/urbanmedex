@@ -98,7 +98,7 @@ exports.updateProduct = async (req, res) => {
           contentType: req.file.mimetype,
           upsert: true,
         });
-
+// this is the trial to search via content also and making whole readable text as searchable text
       if (uploadError) {
         console.error("❌ Upload error:", uploadError);
         return res.status(500).send("Image upload failed");
